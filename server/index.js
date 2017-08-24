@@ -15,6 +15,11 @@ const PORT = process.env.PORT || 8080;
 
 const app = express();
 
+
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
 app.get('/challenges/:category?', (req, res) => {
 	const category = req.params.category;
 	if (!category) {
@@ -42,6 +47,9 @@ app.get('/challenge/:slug', (req, res) => {
 	})
 });
 
+app.get('/users/')
+app.get('/user/:user_id')
+
 // POST requests
 
 app.post("/add-challenge", (req, res) => {
@@ -64,6 +72,9 @@ app.post("/add-challenge", (req, res) => {
 			console.log(err);
 		} else {
 			console.log("Success!");
+			res.json({
+				"status": "success"
+			});
 		}
 	});
 });
