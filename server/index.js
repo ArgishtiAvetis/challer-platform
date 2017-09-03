@@ -22,22 +22,39 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.get('/challenges/:category?', (req, res) => {
-	const category = req.params.category;
-	if (!category) {
+app.get('/challenges/:category?/:type?', (req, res) => {
+	const category 	= req.params.category;
+	const type 		= req.params.type;
+
+	if (!category && !type) {
 		Challenge.find({})
 			.exec((err, challenges) => {
-				if (err) throw err;
+				if (err) res.json({ message: "Data doesn't exist." });
 				res.json(challenges);
 			});
-	} else {
+	} else if (category && !type) {
 		Challenge.find({
 			category: category
 		}).exec((err, challenges) => {
-			if (err) throw err;
+			if (err) res.json({ message: "Data doesn't exist." });
 			res.json(challenges);
 		});
-	}
+	} else if ((category == 'type') && type) {
+		Challenge.find({
+			type: type
+		}).exec((err, challenges) => {
+			if (err) res.json({ message: "Data doesn't exist." });
+			res.json(challenges);
+		});
+	} else {
+		Challenge.find({
+			category: category,
+			type: type
+		}).exec((err, challenges) => {
+			if (err) res.json({ message: "Data doesn't exist." });
+			res.json(challenges);
+		});
+	} 
 }); 
 
 app.get('/challenge/:slug', (req, res) => {
@@ -50,20 +67,26 @@ app.get('/challenge/:slug', (req, res) => {
 });
 
 app.get("/users/:id?", (req, res) => {
- const id = req.params.id;
- if(!id){
-  User.find({})
-   .exec((err, users) => {
-    if(err) throw err;
-    res.json(users);
-   });
- } else {
-  User.find({_id: id})
-   .exec((err, users) => {
-    if(err) throw err;
-    res.json(users);
-   });
- }
+	const id = req.params.id;
+	if(!id){
+	 User.find({})
+	  .exec((err, users) => {
+		if(err) {
+			res.json({ message: "Data doesn't exist." });
+		} else {
+			res.json(users);
+		}
+	  });
+	} else {
+	 User.find({_id: id})
+	  .exec((err, users) => {
+	   	if(err) {
+			res.json({ message: "Data doesn't exist." });
+	   	} else {
+	   		res.json(users);
+	   	}
+	  });
+	}
 });
 
 app.get('/:user_id/challenges', (req, res) => {
@@ -71,7 +94,7 @@ app.get('/:user_id/challenges', (req, res) => {
 	Challenge.find({
 		_id: user_id
 	}).exec((err, challenges) => {
-		if (err) throw err;
+		if (err) res.json({ message: "Data doesn't exist." });
 		res.json(challenges);
 	});
 });	
@@ -82,7 +105,7 @@ app.get('/:challenge_id?/contributions/:user_id?', (req, res) => {
 
 	if (!challenge_id && !user_id) {
 		Contribution.find({}).exec((err, contributions) => {
-			if (err) throw err;
+			if (err) res.json({ message: "Data doesn't exist." });
 			res.json(contributions);
 		});		
 	} else if (user_id && challenge_id) {
@@ -90,21 +113,21 @@ app.get('/:challenge_id?/contributions/:user_id?', (req, res) => {
 			challenge: challenge_id,
 			author: user_id
 		}).exec((err, contributions) => {
-			if (err) throw err;
+			if (err) res.json({ message: "Data doesn't exist." });
 			res.json(contributions);
 		});
 	} else if (challenge_id && !user_id) {
 		Contribution.find({
 			challenge: challenge_id
 		}).exec((err, contributions) => {
-			if (err) throw err;
+			if (err) res.json({ message: "Data doesn't exist." });
 			res.json(contributions);
 		});
 	} else if (!challenge_id && user_id) {
 		Contribution.find({
 			author: user_id
 		}).exec((err, contributions) => {
-			if (err) throw err;
+			if (err) res.json({ message: "Data doesn't exist." });
 			res.json(contributions);
 		});		
 	}
