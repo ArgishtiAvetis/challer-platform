@@ -5,6 +5,11 @@ const challengeSchema = mongoose.Schema({
 	slug: String,
 	body: String,
 	category: String,
+	type: {
+		// the default value is temporary
+		type: String,
+		default: "light"
+	},
 	author: String,
 	published: {
 		type: Date,
