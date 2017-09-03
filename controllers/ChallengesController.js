@@ -11,6 +11,18 @@ module.exports = {
 	    	author		=	req.body.author_id || 'user_id',
 	    	category	=	req.body.category;
 
+	    Challenge.findOne({
+	    	slug: slug
+	    }).exec((err, unique) => {
+	    	if (err) {
+	    		console.log(err);
+	    	} else {
+	    		if (unqiue != []) {
+	    			slug = slug + "-" + Date.now().substr(0, 3);
+	    		}
+	    	}
+	    });
+
 		var newChallenge = new Challenge({
 			title: title,
 			body: body,
